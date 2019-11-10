@@ -14,7 +14,8 @@ def main(hparams):
     trainer = Trainer(
         max_nb_epochs=hparams.epochs,
         gpus=hparams.gpus,
-        nb_gpu_nodes=hparams.nodes
+        nb_gpu_nodes=hparams.nodes,
+		early_stop_callback=None,
     )
 
     trainer.fit(model)
