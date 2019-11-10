@@ -27,6 +27,7 @@ class NO_KD_Cifar(pl.LightningModule):
         self.hparams = hparams
         self.model = create_cnn_model(hparams.model, dataset=hparams.dataset, use_cuda=hparams.cuda)
         self.criterion = nn.CrossEntropyLoss()
+        self.device = 'cuda:0' if hparams.cuda == True else 'cpu'
 
         self.train_step = 0
         self.train_num_correct = 0
@@ -39,6 +40,10 @@ class NO_KD_Cifar(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
+
+        x = x.to(self.device)
+        y = y.to(self.device)
+
         y_hat = self.forward(x)
         loss = self.criterion(y_hat, y)
 
@@ -58,6 +63,10 @@ class NO_KD_Cifar(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
+
+        x = x.to(self.device)
+        y = y.to(self.device)
+
         y_hat = self.forward(x)
         val_loss = self.criterion(y_hat, y)
 
