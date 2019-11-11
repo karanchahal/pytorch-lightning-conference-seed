@@ -87,7 +87,7 @@ class NO_KD_Cifar(pl.LightningModule):
             'val_avg_loss': avg_loss.item(),
             'val_accuracy': float(self.val_num_correct*100/self.val_step)
         }
-
+        self.scheduler.step(np.around(avg_loss.item(),2))
         # reset logging stuff
         self.train_step = 0
         self.train_num_correct = 0
@@ -99,7 +99,9 @@ class NO_KD_Cifar(pl.LightningModule):
     def configure_optimizers(self):
         # REQUIRED
         # can return multiple optimizers and learning_rate schedulers
-        return torch.optim.Adam(self.model.parameters(), lr=self.hparams.learning_rate)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.hparams.learning_rate)
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min',patience=5,factor=0.5,verbose=True)
+        return optimizer
 
     @pl.data_loader
     def train_dataloader(self):
